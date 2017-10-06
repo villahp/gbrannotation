@@ -1,0 +1,47 @@
+{% extends 'layout.html' %Hungry Turtle nom nom nom neature turtle greatbarrierreef australia scuba divetrip}
+{% from 'macros.html' import icon %}
+{% block content %}
+    <div class="container" align="center">
+        <form class="manual" action="" method="post">
+            {{ form.csrf }}
+
+            <div class="input text">
+                {{ form.sentence.label }} {{ form.sentence(row='30',cols='100') }}
+            </div>
+
+            <div class="input submit">
+                <input type="submit" value="Submit" />
+            </div>
+        </form>
+    </div>
+
+    <div class="row" align="center">
+        <div class="col-md-9" id="mytable">
+            {% if tweets|count > 0 %}
+            <h3 class="lead">Annotated Tweets</h3>
+            <table id="tweet-table" class="table">
+               <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>User Location</th>
+                    <th>Tweet</th>
+                    <th>Created at</th>
+                    <th>Category</th>
+                </tr>
+                {%- for tweet in tweets %}
+                    <tr>
+                        <td>{{ loop.index }} </td>
+                        <td>{{ tweet.users.name }}</td>
+                        <td>{{ tweet.users.location }}</td>
+                        <td>{{ tweet.text }}</td>
+                        <td>{{ tweet.created_at }}</td>
+                        <td>{{ tweet.category }}</td>
+                    </tr>
+                {%- endfor %}
+            </table>
+            {% else %}
+            <h3 class=lead>No Tweets Yet</h3>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
