@@ -9,9 +9,6 @@ requests-oauthlib==0.8.0
 scikit-learn==0.18.1
 scikit-multilearn==0.0.5
 scipy==0.19.0
-sessioninstaller==0.0.0
 TwitterAPI==2.4.6
-ubuntu-drivers-common==0.0.0
-Ubuntu-Make==17.3
 urllib3==1.13.1
 Werkzeug==0.12.2
