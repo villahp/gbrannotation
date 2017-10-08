@@ -1,1 +1,1 @@
-web: gunicorn annotation:app --log-file=-
+web: gunicorn gbrannotationdemo:app --log-file=-
