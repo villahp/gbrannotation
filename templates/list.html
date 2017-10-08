@@ -1,4 +1,4 @@
-{% extends 'layout.html' %Hungry Turtle nom nom nom neature turtle greatbarrierreef australia scuba divetrip}
+{% extends 'layout.html' %}
 {% from 'macros.html' import icon %}
 {% block content %}
     <div class="container" align="center">
@@ -10,38 +10,52 @@
             </div>
 
             <div class="input submit">
-                <input type="submit" value="Submit" />
+                <input type="submit" value="Submit"/>
             </div>
         </form>
     </div>
 
     <div class="row" align="center">
         <div class="col-md-9" id="mytable">
-            {% if tweets|count > 0 %}
+            {#            {% if tweets|count > 0 %}#}
             <h3 class="lead">Annotated Tweets</h3>
             <table id="tweet-table" class="table">
-               <tr>
-                    <th>#</th>
+                <tr>
+{#                    <th>#</th>#}
                     <th>Username</th>
                     <th>User Location</th>
                     <th>Tweet</th>
-                    <th>Created at</th>
                     <th>Category</th>
+                    <th>Created at</th>
                 </tr>
-                {%- for tweet in tweets %}
+
+                {%- for tweet in tweets.items %}
                     <tr>
-                        <td>{{ loop.index }} </td>
-                        <td>{{ tweet.users.name }}</td>
-                        <td>{{ tweet.users.location }}</td>
-                        <td>{{ tweet.text }}</td>
-                        <td>{{ tweet.created_at }}</td>
-                        <td>{{ tweet.category }}</td>
+{#                        <td>{{ loop.index  + pagination.skip }} </td>#}
+                        <td width="100px">{{ tweet.users.name }}</td>
+                        <td width="100px">{{ tweet.users.location }}</td>
+                        <td width="600px">{{ tweet.text }}</td>
+                        <td width="300px">{{ tweet.category }}</td>
+                        <td width="100px">{{ tweet.created_at }}</td>
                     </tr>
                 {%- endfor %}
+
+                {% if tweets.has_prev %}
+                    <a href="{{ url_for('list_all',page=tweets.prev_num) }}">&lt;&lt; Newer tweets </a>
+                {% else %}
+                    &lt;&lt; Newer tweets
+                {% endif %}
+
+                {% if tweets.has_next %}
+                    <a href="{{ url_for('list_all',page=tweets.next_num) }}"> Older tweets &gt;&gt;</a>
+                {% else %}
+                    Older tweets &gt;&gt;
+                {% endif %}
             </table>
-            {% else %}
-            <h3 class=lead>No Tweets Yet</h3>
-            {% endif %}
+
+            {#            {% else %}#}
+            {#                <h3 class=lead>No Tweets Yet</h3>#}
+            {#            {% endif %}#}
         </div>
     </div>
 {% endblock %}

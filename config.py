@@ -9,3 +9,11 @@ POSGRESQL='postgresql://cuongpx:cuongpham@localhost/gbrannotation'
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
 APP_STATIC = os.path.join(APP_ROOT, 'ml_model')
+
+TWEETS_PER_PAGE = 10
+
+CATEGORY_LIST = ['beach','boat_tour','cruise','fishing_charter','forest','general','hiking',
+ 'horse_riding','island','jet_tour','sailing','scenic_flight_tour',
+ 'scuba_diving','scuba_doo','sky_diving','snorkeling','snorkeling_tour',
+ 'submarine_creature','surfing','swimming','valley','waterfall',
+ 'watersport','whale_watching']

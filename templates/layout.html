@@ -12,6 +12,18 @@
     <script src="/static/js/bootstrap.js"></script>
     <script src="/static/js/bootstrap-select.js"></script>
     <script>
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        (function () {
+            $.getJSON(
+                $SCRIPT_ROOT + "/", // Your AJAX route here
+                function (data) {
+                    // Update the value in your table here
+                }
+            );
+            setTimeout(arguments.callee, 5000);
+        })();
+    </script>
+    <script>
         $(document).ready(function () {
             $('.selectpicker').selectpicker();
         })
@@ -45,6 +57,23 @@
 
         .input {
             display: inline;
+        }
+
+        .pagination-page-info {
+            padding: .6em;
+            padding-left: 0;
+            width: 40em;
+            margin: .5em;
+            margin-left: 0;
+            font-size: 12px;
+        }
+
+        .pagination-page-info b {
+            color: black;
+            background: #6aa6ed;
+            padding-left: 2px;
+            padding: .1em .25em;
+            font-size: 150%;
         }
 
     </style>

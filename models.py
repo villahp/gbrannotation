@@ -1,8 +1,5 @@
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from annotation import app
-
-db = SQLAlchemy(app)
+from annotation import db
 
 
 class Tweet(db.Model):
