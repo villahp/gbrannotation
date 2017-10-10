@@ -1,6 +1,6 @@
 from TwitterAPI import TwitterAPI
-from backup_views import *
 import re
+
 
 SEARCH_TERM = ['Great Barrier Reef','GBR','greatbarrierreef']
 
@@ -34,21 +34,21 @@ for item in r:
     loc = item['user']['location']
     user_created = item['user']['created_at']
     print('User: '+ name,loc,user_created)
-    user = User.query.filter_by(id=item['user']['id']).first()
-    if user is None:
-        user = User(id=item['user']['id'], name=item['user']['name'], screen_name=item['user']['screen_name'],
-               created_at=item['user']['created_at'], location=item['user']['location'])
-
-    # # Need pre-processing
-    category = predict([text])
-    category_names = []
-    for i in range(len(category[0])):
-        category_names.append(Category.query.filter_by(id=category[0][i] - 1).first().name)
-    category_result = ', '.join(category_names).strip()
-    tweet = Tweet(id_str=item['id_str'], user_id=user.id, text=text, created_at=item['created_at'],
-                  category=category_result)
-    db.session.add(user)
-    db.session.add(tweet)
-    db.session.commit()
+    # user = User.query.filter_by(id=item['user']['id']).first()
+    # if user is None:
+    #     user = User(id=item['user']['id'], name=item['user']['name'], screen_name=item['user']['screen_name'],
+    #            created_at=item['user']['created_at'], location=item['user']['location'])
+    #
+    # # # Need pre-processing
+    # category = predict([text])
+    # category_names = []
+    # for i in range(len(category[0])):
+    #     category_names.append(Category.query.filter_by(id=category[0][i] - 1).first().name)
+    # category_result = ', '.join(category_names).strip()
+    # tweet = Tweet(id_str=item['id_str'], user_id=user.id, text=text, created_at=item['created_at'],
+    #               category=category_result)
+    # db.session.add(user)
+    # db.session.add(tweet)
+    # db.session.commit()
 
 print('\nQUOTA: %s' % r.get_rest_quota())

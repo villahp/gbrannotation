@@ -1,4 +1,3 @@
-from annotation import app
 from models import *
 
 categorylist = ['beach','boat_tour','cruise','fishing_charter','forest','general','hiking',

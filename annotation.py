@@ -2,16 +2,17 @@
 import os
 import config
 import re
-from flask import Flask,render_template,request,flash
+from flask import Flask,render_template,request,flash,redirect, url_for
 from wtforms import Form, TextAreaField, validators
 from sklearn.externals import joblib
-from TwitterAPI import TwitterAPI,TwitterRestPager
+import tweepy
 from threading import Thread
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gbrannotation.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.urandom(24)
 db = SQLAlchemy(app)
@@ -19,10 +20,12 @@ thread = None
 
 clf = joblib.load(os.path.join(config.APP_STATIC, 'gbr_multi_label.pkl'))
 mlb = joblib.load(os.path.join(config.APP_STATIC, 'mlb.pkl'))
-api = TwitterAPI(config.CONSUMER_KEY, config.CONSUMER_SECRET,
-                 config.ACCESS_TOKEN_KEY, config.ACCESS_TOKEN_SECRET, auth_type='oAuth2')
+auth = tweepy.AppAuthHandler(config.CONSUMER_KEY, config.CONSUMER_SECRET)
+api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 SEARCH_TERM = ['Great Barrier Reef','GBR','greatbarrierreef']
 
+auth = tweepy.AppAuthHandler(config.CONSUMER_KEY, config.CONSUMER_SECRET)
+api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 def predict(sentence):
     predicted = clf.predict(sentence)
@@ -30,44 +33,53 @@ def predict(sentence):
     return inverse_pred
 
 
-def processing_tweet(text):
-    return ('%s' % (text)).encode('utf-8')
-
-
 def background_thread():
     """Example of how to send server generated events to clients."""
-    while True:
-        iterator = TwitterRestPager(api, 'search/tweets', {'q': SEARCH_TERM}).get_iterator(wait=2)
-        try:
-            for item in iterator:
-                if 'text' in item:
-                    # print(item['text'])
-                    # id_str = item['id_str']
-                    # created = item['created_at']
-                    # text = item['text']
-                    # print(id_str, created, text)
-                    # name = item['user']['screen_name']
-                    # loc = item['user']['location']
-                    # user_created = item['user']['created_at']
-                    # print('User: ' + name, loc, user_created)
+    # while True:
+    tweetCount = 0
+    message = ''
+    if (not api):
+        message = "Can't Authenticate to Twitter"
+        return message
+    else:
 
-
-                    user_id = item['user']['id']
-                    user_name = item['user']['name'].encode('utf-8')
-                    user_screen_name = item['user']['screen_name'].encode('utf-8')
-                    user_loc = item['user']['location'].encode('utf-8')
-                    user_created = item['user']['created_at']
-                    user = User.query.filter_by(id=item['user']['id']).first()
+        while True:
+            try:
+                if (config.max_id <= 0):
+                    if (not config.sinceId):
+                        new_tweets = api.search(q=SEARCH_TERM, count=config.tweetsPerQry)
+                    else:
+                        new_tweets = api.search(q=SEARCH_TERM, count=config.tweetsPerQry,
+                                                since_id=config.sinceId)
+                else:
+                    if (not config.sinceId):
+                        new_tweets = api.search(q=SEARCH_TERM, count=config.tweetsPerQry,
+                                                max_id=str(config.max_id - 1))
+                    else:
+                        new_tweets = api.search(q=SEARCH_TERM, count=config.tweetsPerQry,
+                                                max_id=str(config.max_id - 1),
+                                                since_id=config.sinceId)
+                if not new_tweets:
+                    print("No more tweets found")
+                    break
+                for item in new_tweets:
+                    print (item.text)
+                    user_id = item.author.id
+                    user_name = item.author.name
+                    user_screen_name = item.author.screen_name
+                    user_loc = item.author.location
+                    user_created = item.author.created_at
+                    user = User.query.filter_by(id=user_id).first()
                     if user is None:
                         user = User(id=user_id, name=user_name,
                                     screen_name=user_screen_name,
                                     created_at=user_created, location=user_loc)
-                    tweet_id_str = item['id_str'].encode('utf-8')
-                    tweet_created = item['created_at']
-                    tweet_text = item['text']
+                    tweet_id_str = item.id_str
+                    tweet_created = item.created_at
+                    tweet_text = item.text
                     tweet_text = re.sub(r'http\S+', ' ', tweet_text, re.IGNORECASE)
                     tweet_text = re.sub(r'[^\w\d\s]', ' ', tweet_text)
-                    tweet_text = re.sub(r'\s+', ' ', tweet_text).encode('utf-8')
+                    tweet_text = re.sub(r'\s+', ' ', tweet_text)
 
                     category = predict([tweet_text])
                     category_names = []
@@ -79,12 +91,14 @@ def background_thread():
                     db.session.add(user)
                     db.session.add(tweet)
                     db.session.commit()
-                elif 'message' in item:
-                    # something needs to be fixed before re-connecting
-                    raise Exception(item['message'])
-        except Exception as e:
-            print ('Error: ' + e.message)
-            pass
+                tweetCount += len(new_tweets)
+                print("Downloaded {0} tweets".format(tweetCount))
+                config.max_id = new_tweets[-1].id
+            except tweepy.TweepError as e:
+                # Just exit if any error
+                print("some error : " + str(e))
+                print('Disconnect with twitter')
+                break
 
 
 def startThreadInViews():
@@ -97,7 +111,7 @@ def startThreadInViews():
 
 def manual_test():
     form = ReusableForm(request.form)
-    print form.errors
+    print(form.errors)
     if request.method == 'POST':
         sentence = request.form['sentence']
         if form.validate():
@@ -131,7 +145,7 @@ def list_all(page=1):
     )
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True)
-
 
 

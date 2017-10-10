@@ -11,7 +11,6 @@ class Tweet(db.Model):
     created_at = db.Column('created_at', db.Date, default=datetime.utcnow)
     verified = db.Column('verified', db.Boolean, default=False)
     category = db.Column('category',db.Unicode)
-    lang = db.Column('lang',db.Unicode)
 
     users = db.relationship('User', foreign_keys=user_id, backref="tweets")
 

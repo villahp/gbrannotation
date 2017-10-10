@@ -11,18 +11,18 @@
     <script src="/static/js/jquery-2.1.3.js"></script>
     <script src="/static/js/bootstrap.js"></script>
     <script src="/static/js/bootstrap-select.js"></script>
-    <script>
-        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-        (function () {
-            $.getJSON(
-                $SCRIPT_ROOT + "/", // Your AJAX route here
-                function (data) {
-                    // Update the value in your table here
-                }
-            );
-            setTimeout(arguments.callee, 5000);
-        })();
-    </script>
+{#    <script>#}
+{#        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};#}
+{#        (function () {#}
+{#            $.getJSON(#}
+{#                $SCRIPT_ROOT + "/", // Your AJAX route here#}
+{#                function (data) {#}
+{#                    // Update the value in your table here#}
+{#                }#}
+{#            );#}
+{#            setTimeout(arguments.callee, 5000);#}
+{#        })();#}
+{#    </script>#}
     <script>
         $(document).ready(function () {
             $('.selectpicker').selectpicker();

@@ -6,7 +6,7 @@ ACCESS_TOKEN_KEY = '1376654834-CqlPgTkTlEKSQ7HAaiWsA0D9viOKIcgl5lNz5FO'
 ACCESS_TOKEN_SECRET = '09dqiuh39UHgxoXkIdueKqpUwbgGkKN6qHpX3grDEYqqY'
 
 POSGRESQL='postgresql://cuongpx:cuongpham@localhost/gbrannotation'
-
+SQLITE='sqlite://annotation.db'
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
 APP_STATIC = os.path.join(APP_ROOT, 'ml_model')
 
@@ -17,3 +17,8 @@ CATEGORY_LIST = ['beach','boat_tour','cruise','fishing_charter','forest','genera
  'scuba_diving','scuba_doo','sky_diving','snorkeling','snorkeling_tour',
  'submarine_creature','surfing','swimming','valley','waterfall',
  'watersport','whale_watching']
+
+maxTweets = 10000000 # Some arbitrary large number
+tweetsPerQry = 100  # this is the max the API permits
+sinceId = None
+max_id = -1
