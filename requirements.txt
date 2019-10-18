@@ -11,4 +11,4 @@ scikit-multilearn==0.0.5
 scipy==0.19.0
 tweepy==3.5.0
 urllib3==1.13.1
-Werkzeug==0.12.2
+Werkzeug==0.15.3
